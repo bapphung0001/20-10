@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chúc mừng 20/10 💐</title>
+<style>
+/* ===== Cơ bản & nền gradient chuyển màu ===== */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:Georgia,"Times New Roman",serif;color:#5a2a55;
+  background:linear-gradient(135deg,#ffd6e8,#e9d5ff,#ffe9f3,#d9c8ff,#fff0c9);
+  background-size:400% 400%;animation:bgmove 18s ease infinite;
+}
+@keyframes bgmove{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+.script{font-family:"Segoe Script","Brush Script MT","Snell Roundhand",cursive}
+
+/* Ánh sáng chuyển động + sao lấp lánh */
+.blob{position:fixed;width:50vmax;height:50vmax;border-radius:50%;filter:blur(60px);opacity:.45;z-index:0;
+  animation:float 14s ease-in-out infinite alternate}
+.b1{background:#ffb3d1;top:-15vmax;left:-15vmax}
+.b2{background:#c9b3ff;bottom:-18vmax;right:-12vmax;animation-delay:-5s}
+.b3{background:#fff1a8;top:30%;left:35%;width:30vmax;height:30vmax;opacity:.3;animation-delay:-9s}
+@keyframes float{to{transform:translate(8vw,6vh) scale(1.15)}}
+.star{position:fixed;width:3px;height:3px;border-radius:50%;background:#fff;z-index:0;
+  box-shadow:0 0 8px 2px #fff6c9;animation:twinkle 3s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.1;transform:scale(.6)}50%{opacity:1;transform:scale(1.4)}}
+
+canvas#fx{position:fixed;inset:0;width:100%;height:100%;z-index:20;pointer-events:none}
+
+/* ===== Màn hình mở đầu ===== */
+#intro{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:24px;transition:opacity 1.4s ease,transform 1.4s ease,filter 1.4s ease}
+#intro.hide{opacity:0;transform:scale(1.25);filter:blur(14px);pointer-events:none}
+.icons{font-size:clamp(34px,8vw,54px);letter-spacing:10px;animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-8px)}}
+#intro h1{font-size:clamp(28px,7vw,56px);font-weight:400;margin:14px 0 4px;line-height:1.2;
+  background:linear-gradient(90deg,#d6317a,#9b5de5,#f4a300,#d6317a);background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:300% 0}}
+#intro .date{font-size:clamp(70px,22vw,170px);line-height:1;color:#e0488d;text-shadow:0 0 30px #fff,0 0 60px #ffb3d1}
+#intro p{margin:6px 0 28px;font-style:italic;opacity:.8}
+.btn{border:0;cursor:pointer;font:inherit;font-size:clamp(16px,4.2vw,20px);padding:16px 34px;border-radius:50px;color:#fff;
+  background:linear-gradient(135deg,#ff6fa5,#b266ff);box-shadow:0 8px 30px rgba(214,49,122,.45);
+  animation:pulse 2s ease-in-out infinite;transition:transform .2s}
+.btn:active{transform:scale(.95)}
+@keyframes pulse{50%{box-shadow:0 8px 45px rgba(214,49,122,.8),0 0 30px #fff3}}
+
+/* ===== Khu vườn ===== */
+#scene{position:fixed;inset:0;z-index:2;opacity:0;pointer-events:none;transition:opacity 2s ease .6s}
+#scene.show{opacity:1;pointer-events:auto}
+.hill{position:absolute;left:-15%;right:-15%;border-radius:50% 50% 0 0}
+.h1{bottom:-9vh;height:24vh;background:linear-gradient(#8fdca0,#4aa876)}
+.h2{bottom:-12vh;height:20vh;background:linear-gradient(#b4ecb9,#63bd86);opacity:.9;left:-40%;right:20%}
+#garden{position:absolute;left:0;right:0;bottom:6vh;height:0}
+.flower{position:absolute;bottom:0;--wd:calc(var(--base)*var(--s));width:var(--wd);left:calc(var(--x) - var(--wd)/2);
+  transform-origin:50% 100%;cursor:pointer;animation:bloom 1.8s cubic-bezier(.2,.9,.3,1.25) both;animation-delay:var(--d)}
+.pop{transform-origin:50% 100%;transition:transform .6s cubic-bezier(.2,.9,.3,1.4)}
+.flower.big{z-index:5}
+.flower.big .pop{transform:scale(1.6)}
+.flower svg{display:block;width:100%;height:auto;overflow:visible;transform-origin:50% 100%;
+  filter:drop-shadow(0 0 8px rgba(255,205,235,.9));animation:sway 4s ease-in-out infinite;animation-delay:var(--d)}
+@keyframes bloom{from{transform:scale(0) translateY(40px);opacity:0}60%{opacity:1}to{transform:scale(1);opacity:1}}
+@keyframes sway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+#bubble{position:fixed;z-index:25;max-width:220px;padding:10px 16px;border-radius:18px;background:#fffffff0;color:#b3246a;
+  font-size:15px;text-align:center;box-shadow:0 6px 24px rgba(180,60,130,.35);opacity:0;pointer-events:none;
+  transform:translate(-50%,-100%) scale(.7);transition:.4s}
+#bubble.on{opacity:1;transform:translate(-50%,-100%) scale(1)}
+
+/* ===== Thiệp lời chúc ===== */
+#card{position:absolute;left:50%;top:clamp(14px,5vh,56px);transform:translateX(-50%);width:min(92vw,640px);text-align:center;
+  padding:clamp(16px,3vh,30px) clamp(16px,4vw,34px);border-radius:28px;background:rgba(255,255,255,.38);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 10px 50px rgba(190,100,170,.3);opacity:0;transition:opacity 1.5s}
+#card.show{opacity:1}
+#title{font-size:clamp(22px,5.6vw,38px);color:#d6317a;min-height:1.3em;text-shadow:0 0 14px #fff}
+#wishes p{font-size:clamp(14px,3.6vw,19px);line-height:1.55;margin-top:10px;min-height:1.5em;font-style:italic}
+.typing::after{content:"|";margin-left:2px;animation:blink .7s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+#foot{margin-top:16px;font-size:clamp(16px,4.2vw,24px);color:#c2185b;opacity:0;transform:translateY(10px);transition:all 2s}
+#foot.show{opacity:1;transform:none;text-shadow:0 0 16px #fff}
+#hint{margin-top:8px;font-size:13px;opacity:0;transition:opacity 1s;color:#8a4a86}
+#hint.show{opacity:.85}
+
+/* ===== Điều khiển nhạc ===== */
+#music{position:fixed;top:max(12px,env(safe-area-inset-top));right:12px;z-index:30;display:none;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:30px;background:rgba(255,255,255,.65);backdrop-filter:blur(6px);box-shadow:0 4px 18px #b8559044}
+#music.show{display:flex}
+#music button{border:0;background:none;font-size:22px;cursor:pointer}
+#music input{width:80px;accent-color:#d6317a}
+</style>
+</head>
+<body>
+
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<canvas id="fx"></canvas>
+
+<!-- Màn hình mở đầu -->
+<section id="intro">
+  <div class="icons">🌷🌹🌻</div>
+  <h1 class="script">Happy Vietnamese Women’s Day</h1>
+  <div class="date script">20/10</div>
+  <p>Có một khu vườn nhỏ đang chờ bạn…</p>
+  <button class="btn" id="openBtn">Mở món quà đặc biệt 💝</button>
+</section>
+
+<!-- Khu vườn hoa -->
+<section id="scene">
+  <div class="hill h2"></div><div class="hill h1"></div>
+  <div id="garden"></div>
+  <div id="card">
+    <h2 id="title" class="script"></h2>
+    <div id="wishes"></div>
+    <div id="foot" class="script">Một món quà nhỏ, gửi ngàn yêu thương ❤️</div>
+    <div id="hint">🌸 Chạm vào những bông hoa để nhận lời chúc nhé</div>
+  </div>
+</section>
+<div id="bubble"></div>
+
+<!-- Điều khiển nhạc -->
+<div id="music">
+  <button id="musicBtn" aria-label="Bật/tắt nhạc">🎵</button>
+  <input id="vol" type="range" min="0" max="1" step="0.05" value="0.5" aria-label="Âm lượng">
+</div>
+
+<script>
+/* =====================================================
+   CẤU HÌNH NHẠC
+   - Để trống "" : trình duyệt tự tạo giai điệu hộp nhạc nhẹ nhàng (không cần file).
+   - Muốn dùng MP3 của bạn: đặt file cùng thư mục với index.html
+     rồi điền tên file vào đây, ví dụ: const MUSIC_FILE = "nhac.mp3";
+   ===================================================== */
+const MUSIC_FILE = "";
+
+/* ---------- Tiện ích ---------- */
+const $ = s => document.querySelector(s);
+const rand = (a,b) => Math.random()*(b-a)+a;
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---------- Sao lấp lánh nền ---------- */
+for (let i=0;i<60;i++){
+  const s=document.createElement('div'); s.className='star';
+  s.style.cssText=`left:${rand(0,100)}%;top:${rand(0,100)}%;animation-delay:${rand(0,3)}s;animation-duration:${rand(2,5)}s`;
+  document.body.appendChild(s);
+}
+
+/* =====================================================
+   HOA VẼ BẰNG SVG
+   ===================================================== */
+const stem = (y,l=1) => `<path d="M50 ${y} C47 ${y+35} 53 ${y+70} 50 160" stroke="#4f9d5d" stroke-width="4" fill="none" stroke-linecap="round"/>
+  <ellipse cx="36" cy="118" rx="14" ry="6" fill="#6cc17b" transform="rotate(-35 36 118)"/>
+  <ellipse cx="65" cy="132" rx="14" ry="6" fill="#58b06b" transform="rotate(35 65 132)"/>`;
+
+function rose(c){ // c = [chính, đậm, nhạt]
+  let o='',m='';
+  for(let i=0;i<5;i++){
+    o+=`<ellipse cx="50" cy="26" rx="14" ry="17" fill="${c[1]}" transform="rotate(${i*72} 50 40)"/>`;
+    m+=`<ellipse cx="50" cy="29" rx="11" ry="13" fill="${c[0]}" transform="rotate(${i*72+36} 50 40)"/>`;
+  }
+  return `<svg viewBox="0 0 100 160">${stem(62)}${o}${m}
+    <circle cx="50" cy="40" r="9" fill="${c[2]}"/>
+    <path d="M50 40 m-6 0 a6 6 0 1 1 6 6 a3 3 0 1 1 -3 -3" fill="none" stroke="${c[1]}" stroke-width="1.6"/></svg>`;
+}
+function tulip(c){
+  return `<svg viewBox="0 0 100 160">${stem(66)}
+    <path d="M50 10 C36 25 34 55 50 68 C66 55 64 25 50 10Z" fill="${c[2]}"/>
+    <path d="M32 22 C26 48 38 66 50 68 C45 50 45 34 32 22Z" fill="${c[0]}"/>
+    <path d="M68 22 C74 48 62 66 50 68 C55 50 55 34 68 22Z" fill="${c[1]}"/></svg>`;
+}
+function sunflower(){
+  let a='',b='';
+  for(let i=0;i<16;i++){
+    a+=`<ellipse cx="50" cy="15" rx="5.5" ry="13" fill="#ffb300" transform="rotate(${i*22.5+11} 50 42)"/>`;
+    b+=`<ellipse cx="50" cy="15" rx="5.5" ry="13" fill="#ffd23d" transform="rotate(${i*22.5} 50 42)"/>`;
+  }
+  let d=''; for(let i=0;i<14;i++){const t=i*2.4,r=2+i*.6;d+=`<circle cx="${50+Math.cos(t)*r}" cy="${42+Math.sin(t)*r}" r="1.2" fill="#c98a3a"/>`}
+  return `<svg viewBox="0 0 100 160">${stem(56)}${a}${b}<circle cx="50" cy="42" r="13" fill="#7a4a1d"/><circle cx="50" cy="42" r="9" fill="#5a3412"/>${d}</svg>`;
+}
+const PAL = {
+  rose:[['#ff6f9f','#d63a74','#ffb3cf'],['#ee4466','#b81f45','#ff9db0'],['#ffc2d6','#e98aab','#fff0f5']],
+  tulip:[['#ff8fb8','#f06292','#ffd1e3'],['#b388ff','#8e5ce0','#e1d2ff'],['#ffd54f','#ffb300','#fff2b3']]
+};
+// [loại, bảng màu, vị trí %, kích thước, độ trễ nở]
+const GARDEN = [
+  ['tulip',1,5,1.0,.2],['rose',0,15,1.25,.5],['sun',0,26,1.35,.8],['tulip',0,36,1.05,1.1],
+  ['rose',2,47,1.4,.4],['tulip',2,58,1.0,1.3],['sun',0,68,1.3,.7],['rose',1,78,1.2,1.0],
+  ['tulip',1,88,1.1,.6],['rose',0,96,1.0,1.4]
+];
+const WISHES = [
+  'Bạn xinh đẹp như đóa hoa này vậy 🌷','Mỗi ngày của bạn đều là một ngày hoa nở 🌸',
+  'Nụ cười của bạn làm bừng sáng cả khu vườn ✨','Chúc bạn thật nhiều yêu thương và bình yên 💖',
+  'Bạn xứng đáng với mọi điều tuyệt vời nhất 🌹','Cảm ơn bạn vì đã luôn dịu dàng và mạnh mẽ 🌻',
+  'Hôm nay là ngày của bạn, hãy tỏa sáng nhé! 💫','Chúc bạn luôn hạnh phúc và rạng rỡ 💐'
+];
+let openFlower=null, bubbleTimer;
+function buildGarden(){
+  const g=$('#garden');
+  GARDEN.forEach(([t,p,x,s,d])=>{
+    const f=document.createElement('div'); f.className='flower';
+    f.style.cssText=`--x:${x}%;--s:${s};--d:${d}s;--base:clamp(60px,11vw,110px)`;
+    const svg = t==='sun'?sunflower():t==='rose'?rose(PAL.rose[p]):tulip(PAL.tulip[p]);
+    f.innerHTML=`<div class="pop">${svg}</div>`;
+    f.addEventListener('click',e=>{e.stopPropagation();clickFlower(f,e)});
+    g.appendChild(f);
+  });
+}
+function clickFlower(f,e){
+  const b=$('#bubble');
+  if(openFlower===f){closeFlower();return}
+  closeFlower(true);
+  openFlower=f; f.classList.add('big');
+  const r=f.getBoundingClientRect();
+  b.textContent=WISHES[Math.floor(Math.random()*WISHES.length)];
+  b.style.left=Math.min(Math.max(r.left+r.width/2,115),innerWidth-115)+'px';
+  b.style.top=Math.max(r.bottom-r.height*1.6-8,70)+'px';
+  b.classList.add('on');
+  for(let i=0;i<14;i++) petal(e.clientX,e.clientY,true);
+  clearTimeout(bubbleTimer); bubbleTimer=setTimeout(()=>closeFlower(),4500);
+}
+function closeFlower(keep){
+  if(openFlower) openFlower.classList.remove('big');
+  openFlower=null; $('#bubble').classList.remove('on');
+}
+
+/* =====================================================
+   HIỆU ỨNG CANVAS: cánh hoa, hạt sáng, tim, pháo hoa
+   ===================================================== */
+const cv=$('#fx'), cx=cv.getContext('2d'); let W,H,DPR;
+function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;
+  cv.width=W*DPR;cv.height=H*DPR;cx.setTransform(DPR,0,0,DPR,0,0)}
+addEventListener('resize',resize); resize();
+
+const P=[]; const PETAL_COLORS=['#ffb3d1','#ff8fb8','#ffd6e8','#e9c9ff','#fff0f5'];
+function petal(x=rand(0,W),y=-20,burst=false){
+  P.push({k:'petal',x,y,vx:burst?rand(-3,3):rand(-.4,.6),vy:burst?rand(-4,-1):rand(.6,1.6),g:burst?.12:0,
+    rot:rand(0,6.28),vr:rand(-.05,.05),s:rand(5,10),c:PETAL_COLORS[Math.floor(rand(0,5))],sw:rand(0,6),life:burst?90:9999});
+}
+function spark(x,y,c='#fff3b0',v=1,g=0,life=40,s=rand(1.2,3)){
+  P.push({k:'spark',x,y,vx:rand(-v,v),vy:rand(-v,v),g,life,max:life,s,c});
+}
+function heart(x,y,fly=false){
+  P.push({k:'heart',x,y,vx:fly?rand(-.5,.5):rand(-1.5,1.5),vy:fly?rand(-2.6,-1.2):rand(-3.5,-1.5),g:fly?0:.06,
+    s:rand(10,22),life:fly?200:70,max:fly?200:70,c:`hsl(${rand(320,350)},90%,${rand(60,72)}%)`,sw:rand(0,6)});
+}
+function firework(x,y){
+  const h=rand(0,360);
+  for(let i=0;i<40;i++){const a=i/40*6.283,v=rand(2,4.5);
+    P.push({k:'spark',x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,g:.05,life:60,max:60,s:rand(1.5,2.8),c:`hsl(${h+rand(-20,20)},100%,70%)`})}
+}
+function heartPath(x,y,s){cx.beginPath();cx.moveTo(x,y+s*.3);
+  cx.bezierCurveTo(x,y,x-s*.5,y,x-s*.5,y+s*.3);cx.bezierCurveTo(x-s*.5,y+s*.6,x,y+s*.8,x,y+s);
+  cx.bezierCurveTo(x,y+s*.8,x+s*.5,y+s*.6,x+s*.5,y+s*.3);cx.bezierCurveTo(x+s*.5,y,x,y,x,y+s*.3);cx.fill()}
+
+let last=performance.now(), acc=0;
+function loop(t){
+  const dt=Math.min((t-last)/16.7,3); last=t; acc+=dt;
+  if(acc>14 && P.length<420){acc=0; petal();}               // mưa cánh hoa liên tục
+  cx.clearRect(0,0,W,H);
+  for(let i=P.length-1;i>=0;i--){
+    const p=P[i]; p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=(p.g||0)*dt; p.life-=dt;
+    if(p.k==='petal'){
+      p.rot+=p.vr*dt; p.sw+=.03*dt; p.x+=Math.sin(p.sw)*.5*dt;
+      cx.save();cx.translate(p.x,p.y);cx.rotate(p.rot);cx.globalAlpha=Math.min(1,p.life/30);cx.fillStyle=p.c;
+      cx.beginPath();cx.ellipse(0,0,p.s,p.s*.55,0,0,6.283);cx.fill();cx.restore();
+    }else if(p.k==='spark'){
+      cx.globalCompositeOperation='lighter';cx.globalAlpha=Math.max(p.life/p.max,0);cx.fillStyle=p.c;
+      cx.beginPath();cx.arc(p.x,p.y,p.s,0,6.283);cx.fill();cx.globalCompositeOperation='source-over';
+    }else{
+      p.x+=Math.sin((p.sw+=.04*dt))*.6*dt;
+      cx.globalAlpha=Math.max(Math.min(p.life/p.max*1.5,1),0);cx.fillStyle=p.c;heartPath(p.x,p.y,p.s);
+    }
+    cx.globalAlpha=1;
+    if(p.life<=0||p.y>H+30||p.y<-60) P.splice(i,1);
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+/* Hạt sáng theo con trỏ / ngón tay & chạm tạo tim, cánh hoa */
+let lastMove=0;
+addEventListener('pointermove',e=>{
+  const n=performance.now(); if(n-lastMove<30||P.length>480) return; lastMove=n;
+  spark(e.clientX,e.clientY,['#fff3b0','#ffc2e0','#e0ccff'][Math.floor(rand(0,3))],.8,.02,35);
+});
+addEventListener('pointerdown',e=>{
+  for(let i=0;i<5;i++) Math.random()<.5?heart(e.clientX,e.clientY):petal(e.clientX,e.clientY,true);
+  for(let i=0;i<8;i++) spark(e.clientX,e.clientY,'#fff3b0',3,.05,30);
+});
+
+/* =====================================================
+   NHẠC NỀN (Web Audio hoặc MP3 tuỳ chọn)
+   ===================================================== */
+let actx,master,timer,mp3,musicOn=false,vol=.5,n=0;
+const CH=[[261.63,329.63,392,523.25],[196,246.94,293.66,392],[220,261.63,329.63,440],[174.61,220,261.63,349.23]];
+const PAT=[0,1,2,3,2,1,2,3];
+function note(f,d,g=1){
+  const t=actx.currentTime;
+  [[f,'sine',.16],[f*2,'triangle',.05]].forEach(([fr,ty,a])=>{
+    const o=actx.createOscillator(),e=actx.createGain();o.type=ty;o.frequency.value=fr;
+    e.gain.setValueAtTime(0,t);e.gain.linearRampToValueAtTime(a*g,t+.01);e.gain.exponentialRampToValueAtTime(.0001,t+d);
+    o.connect(e);e.connect(master);o.start(t);o.stop(t+d+.05);
+  });
+}
+function step(){
+  const c=CH[Math.floor(n/8)%4],i=n%8;
+  note(c[PAT[i]],1);
+  if(i===0) note(c[0]/2,2,.9);
+  if(i===4&&Math.random()<.7) note(c[3]*1.5,1.4,.6);
+  n++;
+}
+function startMusic(){
+  if(MUSIC_FILE){
+    mp3=mp3||Object.assign(new Audio(MUSIC_FILE),{loop:true});
+    mp3.volume=vol; mp3.play().catch(err=>console.warn('Không phát được file nhạc:',err));
+  }else{
+    if(!actx){actx=new (window.AudioContext||window.webkitAudioContext)();master=actx.createGain();master.connect(actx.destination)}
+    master.gain.value=vol*.7; actx.resume(); clearInterval(timer); timer=setInterval(step,330);
+  }
+  musicOn=true; $('#musicBtn').textContent='🎵';
+}
+function stopMusic(){
+  if(MUSIC_FILE&&mp3) mp3.pause(); else clearInterval(timer);
+  musicOn=false; $('#musicBtn').textContent='🔇';
+}
+$('#musicBtn').onclick=()=>musicOn?stopMusic():startMusic();
+$('#vol').oninput=e=>{vol=+e.target.value; if(master)master.gain.value=vol*.7; if(mp3)mp3.volume=vol};
+
+/* =====================================================
+   HÀNH TRÌNH MỞ QUÀ + LỜI CHÚC ĐÁNH MÁY
+   ===================================================== */
+async function typeText(el,text,sp=45){
+  el.classList.add('typing');
+  for(const ch of Array.from(text)){el.textContent+=ch;await sleep(sp)}
+  el.classList.remove('typing');
+}
+let started=false;
+$('#openBtn').addEventListener('click',async()=>{
+  if(started) return; started=true;
+  startMusic();                                   // nhạc chỉ bắt đầu sau khi người dùng bấm
+  $('#intro').classList.add('hide');
+  $('#music').classList.add('show');
+  for(let i=0;i<30;i++) setTimeout(()=>petal(rand(0,W),rand(0,H*.5),true),i*40);
+  buildGarden(); $('#scene').classList.add('show');
+  await sleep(2200); $('#card').classList.add('show');
+  await sleep(1200);
+  await typeText($('#title'),'Chúc mừng ngày Phụ nữ Việt Nam 20/10!',60);
+  const lines=['Chúc bạn luôn xinh đẹp, hạnh phúc và rạng rỡ như những đóa hoa.',
+               'Mong mọi điều dịu dàng và tốt đẹp nhất sẽ đến với bạn.',
+               'Cảm ơn vì đã làm cho thế giới này trở nên tươi đẹp hơn.'];
+  for(let i=0;i<lines.length;i++){
+    await sleep(700);
+    const p=document.createElement('p');$('#wishes').appendChild(p);
+    await typeText(p,lines[i],32);
+  }
+  // Lời chúc cuối: tim bay lên + pháo hoa nhỏ
+  for(let i=0;i<36;i++) setTimeout(()=>heart(rand(0,W),H+10,true),i*110);
+  for(let i=0;i<7;i++) setTimeout(()=>firework(rand(W*.15,W*.85),rand(H*.12,H*.4)),i*600);
+  await sleep(1200); $('#foot').classList.add('show');
+  await sleep(1500); $('#hint').classList.add('show');
+});
+</script>
+</body>
+</html>
